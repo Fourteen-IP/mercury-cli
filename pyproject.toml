@@ -12,10 +12,10 @@ authors = [
 dependencies = [
     "prompt-toolkit>=3.0.52",
     "yaspin>=3.3.0",
-    "prompt-toolkit-action-completer @ git+https://github.com/Fourteen-IP/prompt-toolkit-action-completer.git@1.2.3",
     "argparse>=1.4.0",
     "asciimatics>=1.15.0",
     "mercury-ocip>=0.1.3b0",
+    "fourteen-prompt-toolkit-action-completer>=1.2.2",
 ]
 
 [dependency-groups]
