@@ -15,7 +15,7 @@ dependencies = [
     "prompt-toolkit-action-completer @ git+https://github.com/Fourteen-IP/prompt-toolkit-action-completer.git@1.2.3",
     "argparse>=1.4.0",
     "asciimatics>=1.15.0",
-    "mercury-ocip @ git+https://github.com/Fourteen-IP/mercury-ocip.git@v0.1.2-beta",
+    "mercury-ocip>=0.1.3b0",
 ]
 
 [dependency-groups]
