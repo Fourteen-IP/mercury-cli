@@ -1,0 +1,40 @@
+# Mercury CLI
+
+## Overview
+
+`mercury-cli` is an interactive command-line interface (CLI) tool designed to simplify using the [Mercury OCIP](https://github.com/Fourteen-IP/mercury-ocip) Library. All automations and operations that can be performed using Mercury OCIP can now be executed through an intuitive CLI with autocomplete functionality.
+
+### Example
+
+```asciinema-player
+{
+    "file": "assets/asciinema/autocomplete-example.cast",
+    "title": "Autocomplete Showcase",
+    "mkap_theme": "none",
+    "theme": "dracula",
+    "fit": "width",
+    "cols": 120,
+    "rows": 24,
+    "autoplay": true
+}
+```
+
+## Installation
+
+To install `mercury-cli`, use pip:
+
+```bash
+pip install mercury-cli
+```
+
+You can then run the CLI using the following command:
+
+```bash
+mercury_cli
+```
+
+This runs the module and starts the interactive CLI session. From here you can run commands and do some automations!
+
+See the Commands section for more details on commands and features available in `mercury_cli`.
+
+<small style="opacity: 0.1;"><a href="assets/mercury/" style="color: inherit; text-decoration: none;">*Try typing the project name as a command... 🐍*</a></small>
