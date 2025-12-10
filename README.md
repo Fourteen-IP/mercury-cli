@@ -13,16 +13,6 @@ A command-line interface for managing and automating Broadworks provisioning ope
 
 ---
 
-### Install from Source
-
-```bash
-git clone <repository-url>
-cd mercury-cli
-pip install -e .
-```
-
----
-
 ## Getting Started
 
 Launch the CLI by running:
