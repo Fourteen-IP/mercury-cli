@@ -31,11 +31,3 @@ jobs:
         push: true
         tags: |
           ghcr.io/fourteen-ip/mercury-cli-docs:latest
-  deploy:
-    runs-on: self-hosted
-    needs: build
-    steps:
-      - uses: actions/checkout@v4
-      - run: |
-          cd ~ && docker compose pull docs-cli && docker compose up -d --no-deps --force-recreate docs-cli
-          docker image prune -a -f
