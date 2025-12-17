@@ -2,11 +2,8 @@ import sys
 import os
 from importlib import metadata
 from prompt_toolkit.styles import Style
-from rich.panel import Panel
 from rich.text import Text
-from rich.console import Console
-from rich import box
-from prompt_toolkit import prompt
+from rich.prompt import Prompt
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 from mercury_cli.globals import MERCURY_CLI
@@ -25,7 +22,6 @@ SPLASH_ART = """
 """
 
 # CSS Style for the CLI
-cli_style = MERCURY_CLI.css()
 console = MERCURY_CLI.console()
 
 parser = argparse.ArgumentParser()  # For non interactive commands
@@ -44,10 +40,10 @@ def show_splash() -> None:
 
     version = metadata.version("mercury-cli")
     welcome_text = Text.assemble(
-        (SPLASH_ART, cli_style["header"]),
-        ("\nWelcome to mercury_cli ", cli_style["subheader"]),
-        (f"v{version}\n\n", cli_style["version"]),
-        ("─" * 60 + "\n", cli_style["divider"]),
+        (SPLASH_ART, "header"),
+        ("\nWelcome to mercury_cli ", "subheader"),
+        (f"v{version}\n\n", "version"),
+        ("─" * 60 + "\n", "divider"),
         justify="center",
     )
     console.print(welcome_text, justify="center", overflow="crop", no_wrap=True)
@@ -57,11 +53,11 @@ def authenticate() -> None:
     """
     Prompts the user for authentication details and authenticates the mercury client.
     """
-    username = prompt("Username: ", style=cli_style)
-    password = prompt("Password: ", is_password=True, style=cli_style)
-    host = prompt(
-        "URL (e.g., https://mercury.example.com/webservice/services/ProvisioningService): ",
-        style=cli_style,
+
+    username = Prompt.ask("[prompt]Username [/prompt]")
+    password = Prompt.ask("[prompt]Password [/prompt]", password=True)
+    host = Prompt.ask(
+        "[prompt]URL (e.g., https://mercury.example.com/webservice/services/ProvisioningService) [/prompt]"
     )
 
     MERCURY_CLI.get().client_auth(
@@ -96,17 +92,19 @@ def main():
                 authenticate()
             break
         except AttributeError as ae:  # Avoid infinite loop on AttributeErrors
-            print(f"Authentication failed: {ae}")
-            print("Please try again.\n")
+            console.print(
+                f"[error]Authentication failed: {ae} \n Please try again.\n [/error]"
+            )
             sys.exit()
         except Exception as e:
-            print(f"Authentication failed: {e}")
-            print("Please try again.\n")
+            console.print(
+                f"[error]Authentication failed: {e} \n Please try again.\n [/error]"
+            )
             continue
 
     MERCURY_CLI.get().session_create(  # Create terminal prompt session
         message="mercury_cli >>> ",
-        style=Style.from_dict(cli_style),
+        style=Style.from_dict({"prompt": "ansicyan bold"}),
         refresh_interval=1,
         completer=MERCURY_CLI.completer(),
         auto_suggest=AutoSuggestFromHistory(),
@@ -156,22 +154,22 @@ def command_loop() -> None:
                             "not found" in str(ve).lower()
                             or "no action" in str(ve).lower()
                         ):
-                            print(
-                                f"Unknown command \"{text}\". Type 'help' for a list of commands."
+                            console.print(
+                                f"[error]Unknown command \"{text}\". Type 'help' for a list of commands.[/error]"
                             )
                         else:
                             # Other ValueError (like spinner terminal size issues)
-                            print(f"Error: {ve}")
+                            console.print(f"[error]Error: {ve}[/error]")
                     except Exception as e:
-                        print(f"Error executing command: {e}")
+                        console.print(f"[error]Error executing command: {e}[/error]")
 
         except (KeyboardInterrupt, EOFError):
-            print("Exiting mercury_cli. Goodbye!")
+            console.print("Exiting mercury_cli. Goodbye!")
             MERCURY_CLI.client().disconnect()  # Mercury Client Cleanup
             sys.exit()
 
         except Exception as e:
-            print(f"Error: {e}")
+            console.print(f"[error]Error: {e}[/error]")
             pass  # Ignore errors so it doesnt crash the cli
 
 

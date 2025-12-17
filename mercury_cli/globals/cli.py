@@ -3,6 +3,7 @@ from mercury_ocip import Client
 from mercury_ocip import Agent
 from prompt_toolkit import PromptSession
 from rich.console import Console
+from rich.theme import Theme
 
 
 class MERCURY_CLI:
@@ -36,21 +37,22 @@ class MERCURY_CLI:
         Initializes the action completer for the CLI.
         """
         self.__completer = ActionCompleter()
-        self.__console = Console()
-        self.__css = {
-            "header": "bold #deaaff",
-            "subheader": "bold #d8bbff",
-            "version": "bold #c0fdff",
-            "divider": "#666666",
-            "separator": "#666666",
-            "label": "#ffffff",
-            "value": "#87d787",
-            "success": "#C3EBC3 bold",
-            "error": "#FFB6B0 bold",
-            "toolbar.status": "bg:#005577 #ffffff",
-            "toolbar.context": "bg:#333333 #ffffff",
-            "prompt": "ansicyan bold #c0fdff",
-        }
+        self.__console = Console(
+            theme=Theme(
+                {
+                    "header": "bold #deaaff",
+                    "subheader": "bold #d8bbff",
+                    "version": "bold #c0fdff",
+                    "divider": "#666666",
+                    "separator": "#666666",
+                    "label": "#ffffff",
+                    "value": "#87d787",
+                    "success": "bold #C3EBC3",
+                    "error": "bold #FFB6B0",
+                    "prompt": "bold #27F5E4",
+                }
+            )
+        )
 
     def client_auth(self, username: str, password: str, host: str, tls: bool = True):
         """
@@ -136,16 +138,6 @@ class MERCURY_CLI:
             Agent: The initialized agent.
         """
         return MERCURY_CLI.__instance.__agent
-
-    @staticmethod
-    def css() -> dict:
-        """
-        Retrieves the CSS style configuration dictionary.
-
-        Returns:
-            dict: The CSS configuration for prompt_toolkit styling.
-        """
-        return MERCURY_CLI.__instance.__css
 
     @staticmethod
     def console() -> Console:

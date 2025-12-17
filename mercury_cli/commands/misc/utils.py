@@ -5,6 +5,7 @@ from typing import Sequence as sr
 from typing import Optional
 
 completer = MERCURY_CLI.completer()
+console = MERCURY_CLI.console()
 
 
 def _get_commands():
@@ -52,8 +53,7 @@ def _help(command_name: Optional[str] = None):
 
 @completer.action("sysver", display_meta="Gives the current system version")
 def _sysver():
-    client = MERCURY_CLI.client()
-    version = client.raw_command("SystemSoftwareVersionGetRequest")
+    version = MERCURY_CLI.client().raw_command("SystemSoftwareVersionGetRequest")
     print(f"Current system version: {version.version}")
 
 
@@ -66,4 +66,4 @@ def _exit():
 
 @completer.action("clear", display_meta="Clears the terminal screen")
 def _clear():
-    print("\033[H\033[J", end="")
+    console.clear()
