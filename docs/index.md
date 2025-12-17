@@ -37,4 +37,14 @@ This runs the module and starts the interactive CLI session. From here you can r
 
 See the Commands section for more details on commands and features available in `mercury_cli`.
 
+## Quick Login
+
+You can pass parameters to `mercury-cli` when starting it from the command line. For example:
+
+```bash
+mercury_cli --username your.username --password-env YOUR_PASSWORD_ENV_VARIABLE --host https://mercury.example.com/webservice/services/ProvisioningService
+```
+
+This will drop you directly into the CLI with the provided credentials.
+
 <small style="opacity: 0.1;"><a href="assets/mercury/" style="color: inherit; text-decoration: none;">*Try typing the project name as a command... 🐍*</a></small>
