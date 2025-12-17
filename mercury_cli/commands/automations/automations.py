@@ -1,7 +1,6 @@
 from mercury_ocip.automate.user_digest import UserDetailsResult
 from mercury_ocip.automate.user_digest import UserDigestResult
 from mercury_cli.globals import MERCURY_CLI
-from yaspin import yaspin
 from action_completer import Empty
 from mercury_cli.utils.service_group_id_callable import (
     _get_group_id_completions,
@@ -44,8 +43,10 @@ def _find_alias(service_provider_id: str, group_id: str, alias: str):
         alias_name: The name of the alias to look up.
     """
     try:
-        spinner = yaspin(text="Looking up alias...", color="cyan")
-        spinner.start()
+        spinner = Progress(
+            SpinnerColumn(), TextColumn("[progress.description]{task.description}")
+        )
+        spinner.render()
     except ValueError:
         spinner = None
         print("Looking up alias...")
@@ -58,12 +59,12 @@ def _find_alias(service_provider_id: str, group_id: str, alias: str):
         )
 
         if spinner:
-            spinner.text = ""
+            spinner.text = None
 
         if result is None:
             msg = f"✘ Alias '{alias}' not found."
             if spinner:
-                spinner.fail(msg)
+                spinner.update(text=msg)
             else:
                 print(msg)
             return
@@ -511,36 +512,28 @@ def _group_audit(service_provider_id: str, group_id: str):
         service_provider_id: The ID of the service provider.
         group_id: The ID of the group to audit.
     """
-    try:
-        spinner = yaspin(text="Performing group audit...", color="cyan")
-        spinner.start()
-    except ValueError:
-        spinner = None
-        print("Performing group audit...")
+    with console.status(
+        "[cyan]Performing group audit...", spinner="dots", spinner_style="cyan"
+    ) as status:
+        try:
+            result = MERCURY_CLI.agent().automate.audit_group(
+                service_provider_id=service_provider_id,
+                group_id=group_id,
+            )
 
-    try:
-        result = MERCURY_CLI.agent().automate.audit_group(
-            service_provider_id=service_provider_id,
-            group_id=group_id,
-        )
-
-        if spinner:
-            spinner.stop()
-
-        if result.ok:
-            formatted_output, style = _format_audit_output(result)
-            print_formatted_text(formatted_output, style=style)
-        else:
-            msg = f"✘ Group audit failed for Group ID '{group_id}'."
-            if spinner:
-                spinner.fail(msg)
+            if result.ok:
+                status.stop()
+                formatted_output, style = _format_audit_output(result)
+                print_formatted_text(formatted_output, style=style)
             else:
-                print(msg)
+                status.stop()
+                console.print(
+                    f"✘ Group audit failed for Group ID '{group_id}'.", style="red"
+                )
 
-    except Exception as e:
-        if spinner:
-            spinner.fail("✘ Error occurred during group audit.")
-        print(f"Error: {e}")
+        except Exception as e:
+            status.stop()
+            console.print(f"✘ {e}", style="red")
 
 
 @completer.automations.action(
@@ -558,31 +551,23 @@ def _user_digest(user_id: str):
     Args:
         user_id: The ID of the user to audit.
     """
-    try:
-        spinner = yaspin(text="Performing user digest...", color="cyan")
-        spinner.start()
-    except ValueError:
-        spinner = None
-        print("Performing user digest...")
+    with console.status(
+        "[cyan]Performing user digest...", spinner="dots", spinner_style="cyan"
+    ) as status:
+        try:
+            result = MERCURY_CLI.agent().automate.user_digest(
+                user_id=user_id,
+            )
 
-    try:
-        result = MERCURY_CLI.agent().automate.user_digest(
-            user_id=user_id,
-        )
-
-        if spinner:
-            spinner.stop()
-
-        if result.ok:
-            _format_user_digest_output(result)
-        else:
-            msg = f"✘ User digest failed for User ID '{user_id}'."
-            if spinner:
-                spinner.fail(msg)
+            if result.ok:
+                status.stop()
+                _format_user_digest_output(result)
             else:
-                print(msg)
+                status.stop()
+                console.print(
+                    f"✘ User digest failed for User ID '{user_id}'.", style="red"
+                )
 
-    except Exception as e:
-        if spinner:
-            spinner.fail("✘ Error occurred during user digest.")
-        print(f"Error: {e}")
+        except Exception as e:
+            status.stop()
+            console.print(f"✘ {e}", style="red")
