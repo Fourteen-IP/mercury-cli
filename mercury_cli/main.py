@@ -11,6 +11,7 @@ from mercury_cli.utils.egg import main as egg_main  # noqa: F401
 from mercury_cli.commands.misc.plugins import load_plugins
 import mercury_cli.commands  # noqa: F401
 import argparse
+from mercury_ocip.exceptions import MError
 
 SPLASH_ART = """
 ███╗   ███╗███████╗██████╗  ██████╗██╗   ██╗██████╗ ██╗   ██╗      ██████╗██╗     ██╗
@@ -54,10 +55,11 @@ def authenticate() -> None:
     Prompts the user for authentication details and authenticates the mercury client.
     """
 
-    username = Prompt.ask("[prompt]Username [/prompt]")
-    password = Prompt.ask("[prompt]Password [/prompt]", password=True)
+    username = Prompt.ask("[prompt]Username [/prompt]", console=console)
+    password = Prompt.ask("[prompt]Password [/prompt]", password=True, console=console)
     host = Prompt.ask(
-        "[prompt]URL (e.g., https://mercury.example.com/webservice/services/ProvisioningService) [/prompt]"
+        "[prompt]URL (e.g., https://mercury.example.com/webservice/services/ProvisioningService) [/prompt]",
+        console=console,
     )
 
     MERCURY_CLI.get().client_auth(
@@ -91,20 +93,20 @@ def main():
             elif not args.no_login:  # Skip login if --no-login is provided
                 authenticate()
             break
-        except AttributeError as ae:  # Avoid infinite loop on AttributeErrors
-            console.print(
-                f"[error]Authentication failed: {ae} \n Please try again.\n [/error]"
-            )
-            sys.exit()
-        except Exception as e:
+        except MError as e:
             console.print(
                 f"[error]Authentication failed: {e} \n Please try again.\n [/error]"
             )
             continue
+        except Exception as e:
+            console.print(
+                f"[error]Authentication failed: {e} \n Please try again.\n [/error]"
+            )
+            sys.exit()
 
     MERCURY_CLI.get().session_create(  # Create terminal prompt session
         message="mercury_cli >>> ",
-        style=Style.from_dict({"prompt": "ansicyan bold"}),
+        style=Style.from_dict({"prompt": "ansicyan bold #c0fdff"}),
         refresh_interval=1,
         completer=MERCURY_CLI.completer(),
         auto_suggest=AutoSuggestFromHistory(),

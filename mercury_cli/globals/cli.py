@@ -49,7 +49,7 @@ class MERCURY_CLI:
                     "value": "#87d787",
                     "success": "bold #C3EBC3",
                     "error": "bold #FFB6B0",
-                    "prompt": "bold #27F5E4",
+                    "prompt": "bold #c0fdff",
                 }
             )
         )
