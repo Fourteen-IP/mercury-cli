@@ -2,6 +2,7 @@ from action_completer import ActionCompleter
 from mercury_ocip import Client
 from mercury_ocip import Agent
 from prompt_toolkit import PromptSession
+from rich.console import Console
 
 
 class MERCURY_CLI:
@@ -18,6 +19,7 @@ class MERCURY_CLI:
     __client: Client = None
     __session: PromptSession = None
     __agent: Agent = None
+    __console: Console = None
 
     def __new__(cls: "MERCURY_CLI"):
         """
@@ -34,6 +36,7 @@ class MERCURY_CLI:
         Initializes the action completer for the CLI.
         """
         self.__completer = ActionCompleter()
+        self.__console = Console()
         self.__css = {
             "header": "bold #deaaff",
             "subheader": "bold #d8bbff",
@@ -143,6 +146,16 @@ class MERCURY_CLI:
             dict: The CSS configuration for prompt_toolkit styling.
         """
         return MERCURY_CLI.__instance.__css
+
+    @staticmethod
+    def console() -> Console:
+        """
+        Retrieves the Rich console instance.
+
+        Returns:
+            Console: The Rich console for formatted output.
+        """
+        return MERCURY_CLI.__instance.__console
 
 
 MERCURY_CLI()

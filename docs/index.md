@@ -45,6 +45,18 @@ You can pass parameters to `mercury-cli` when starting it from the command line.
 mercury_cli --username your.username --password-env YOUR_PASSWORD_ENV_VARIABLE --host https://mercury.example.com/webservice/services/ProvisioningService
 ```
 
+Additionally, you can use `--no-login` to skip the login process:
+
+```bash
+mercury_cli --no-login
+```
+
+or `--action` to login and immediately execute a command:
+
+```bash
+mercury_cli --username your.username --password-env YOUR_PASSWORD_ENV_VARIABLE --host https://mercury.example.com/webservice/services/ProvisioningService --action "automations find_alias SVPID GRPID 1234"
+```
+
 This will drop you directly into the CLI with the provided credentials.
 
 <small style="opacity: 0.1;"><a href="assets/mercury/" style="color: inherit; text-decoration: none;">*Try typing the project name as a command... 🐍*</a></small>

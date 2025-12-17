@@ -26,6 +26,7 @@ SPLASH_ART = """
 
 # CSS Style for the CLI
 cli_style = MERCURY_CLI.css()
+console = MERCURY_CLI.console()
 
 parser = argparse.ArgumentParser()  # For non interactive commands
 parser.add_argument("--no-login", required=False, action="store_true")
@@ -34,8 +35,6 @@ parser.add_argument("--password-env", required=False, type=str)
 parser.add_argument("--host", required=False, type=str)
 parser.add_argument("--action", required=False, type=str)
 args = parser.parse_args()
-
-console = Console()
 
 
 def show_splash() -> None:
@@ -114,7 +113,12 @@ def main():
     )
 
     try:
-        load_plugins()
+        if args.no_login:
+            console.print(
+                "[yellow]Warning: You are running in no-login mode. There is no client session, no commands can be sent to the server.[/]"
+            )
+        else:
+            load_plugins()
     except Exception as e:
         print(f"Plugins failed to load: {e}")
 
