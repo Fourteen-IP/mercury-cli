@@ -1,3 +1,5 @@
+from mercury_ocip.automate.user_digest import UserDetailsResult
+from mercury_ocip.automate.user_digest import UserDigestResult
 from mercury_cli.globals import MERCURY_CLI
 from yaspin import yaspin
 from action_completer import Empty
@@ -9,6 +11,15 @@ from mercury_ocip.automate.base_automation import AutomationResult
 from prompt_toolkit import print_formatted_text
 from prompt_toolkit.formatted_text import FormattedText
 from prompt_toolkit.styles import Style
+
+from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
+from rich.tree import Tree
+from rich import box
+from rich.text import Text
+
+console = Console()
 
 completer = MERCURY_CLI.completer()
 
@@ -78,6 +89,256 @@ def _find_alias(service_provider_id: str, group_id: str, alias: str):
         if spinner:
             spinner.fail("✘ Error occurred during alias lookup.")
         print(f"Error: {e}")
+
+
+def _format_user_digest_output(result: AutomationResult[UserDigestResult]) -> None:
+    """
+    Display a beautifully formatted user digest using Rich.
+    """
+
+    STYLES = MERCURY_CLI.css()
+
+    try:
+        user_details: UserDetailsResult = result.payload.user_details
+        user_info = user_details.user_info
+
+        # Header
+        _print_header()
+
+        # Main info sections
+        _print_basic_info(user_info, user_details, STYLES)
+        _print_call_forwarding(user_details, STYLES)
+        _print_voicemail_forwarding(user_details, STYLES)
+        _print_memberships(result, STYLES)
+        _print_devices(user_details, STYLES)
+
+    except AttributeError as e:
+        console.print(f"Error: Missing data field - {e}", style="red")
+    except Exception as e:
+        console.print(f"Error displaying user digest: {e}", style="red")
+
+
+def _print_header() -> None:
+    """Print the header panel."""
+    STYLES = MERCURY_CLI.css()
+    console.print(
+        Panel(
+            Text("User Digest Report", style=STYLES["header"], justify="center"),
+            style=STYLES["divider"],
+        )
+    )
+
+
+def _print_basic_info(user_info, user_details, STYLES: dict) -> None:
+    """Print basic user information in a 3-column layout."""
+    info_table = Table(box=None, show_header=False, padding=(0, 2), expand=True)
+    info_table.add_column(style=STYLES["label"], width=18)
+    info_table.add_column(style=STYLES["value"])
+    info_table.add_column(style=STYLES["label"], width=18)
+    info_table.add_column(style=STYLES["value"])
+    info_table.add_column(style=STYLES["label"], width=18)
+    info_table.add_column(style=STYLES["value"])
+
+    # Row 1: Name, Extension, DND Status
+    dnd_status = "🔇 ON" if user_details.dnd_status == "true" else "🔊 OFF"
+    dnd_color = "#ff5555" if user_details.dnd_status == "true" else STYLES["success"]
+
+    info_table.add_row(
+        "Name",
+        f"{user_info.first_name} {user_info.last_name}",
+        "Extension",
+        user_info.extension,
+        "DND",
+        f"[{dnd_color}]{dnd_status}[/]",
+    )
+
+    # Row 2: ID, Phone, Trunked
+    info_table.add_row(
+        "ID",
+        user_info.user_id or "N/A",
+        "Phone",
+        user_info.phone_number,
+        "Trunked",
+        "✓" if user_info.trunk_addressing is not None else "✗",
+    )
+
+    # Row 3: Service Provider, Group, CLID
+    info_table.add_row(
+        "Service Provider",
+        user_info.service_provider_id,
+        "Group",
+        user_info.group_id,
+        "CLID",
+        user_info.calling_line_id_phone_number,
+    )
+
+    console.print(
+        Panel(
+            info_table,
+            title="[bold #d8bbff]Basic Info[/]",
+            border_style=STYLES["divider"],
+        )
+    )
+
+
+def _print_call_forwarding(user_details, STYLES: dict) -> None:
+    """Print call forwarding information."""
+    # Regular forwards
+    forwards_active = [
+        f
+        for f in user_details.forwards.user_forwarding
+        if f.is_active == "true" and f.variant != "Selective"
+    ]
+
+    if forwards_active:
+        forward_text = Text(justify="center")
+        for i, fwd in enumerate(forwards_active):
+            if i > 0:
+                forward_text.append(" | ", style=STYLES["separator"])
+            forward_text.append(
+                f"{fwd.variant.replace('_', ' ').title()}: ", style=STYLES["label"]
+            )
+            forward_text.append(
+                fwd.forward_to_phone_number or "—", style=STYLES["success"]
+            )
+        console.print(
+            Panel(
+                forward_text,
+                title="[bold #d8bbff]Active Forwards[/]",
+                border_style=STYLES["divider"],
+            )
+        )
+
+    # Selective forwards
+    selective_forwards = [
+        f
+        for f in user_details.forwards.user_forwarding
+        if f.is_active == "true" and f.variant == "Selective" and f.selective_criteria
+    ]
+
+    if selective_forwards:
+        for fwd in selective_forwards:
+            selective_table = Table(box=box.SIMPLE, show_header=True, expand=True)
+            selective_table.add_column("Criteria Name", style=STYLES["value"])
+            selective_table.add_column("Forward To", style=STYLES["success"])
+            selective_table.add_column("Time Schedule", style=STYLES["label"])
+            selective_table.add_column("Call From", style=STYLES["label"])
+
+            if fwd.selective_criteria and fwd.selective_criteria.row:
+                for row in fwd.selective_criteria.row:
+                    selective_table.add_row(
+                        row.col[1] if len(row.col) > 1 else "N/A",
+                        row.col[6] if len(row.col) > 6 else "N/A",
+                        row.col[2] if len(row.col) > 2 else "N/A",
+                        row.col[3] if len(row.col) > 3 else "N/A",
+                    )
+
+            console.print(
+                Panel(
+                    selective_table,
+                    title="[bold #d8bbff]Selective Call Forwarding[/]",
+                    border_style=STYLES["divider"],
+                ),
+            )
+
+
+def _print_voicemail_forwarding(user_details, STYLES: dict) -> None:
+    """Print voicemail forwarding information."""
+    vm_forwards_active = [
+        f for f in user_details.forwards.voicemail_forwarding if f.is_active == "true"
+    ]
+
+    if vm_forwards_active:
+        forward_text = Text(justify="center")
+        for i, fwd in enumerate(vm_forwards_active):
+            if i > 0:
+                forward_text.append(" | ", style=STYLES["separator"])
+            forward_text.append(
+                f"{fwd.variant.replace('voice_mail', 'vm').replace('_', ' ').title()}: ",
+                style=STYLES["label"],
+            )
+            if fwd.is_active:
+                forward_text.append("✓", style=STYLES["success"])
+            else:
+                forward_text.append("✗", style=STYLES["error"])
+        console.print(
+            Panel(
+                forward_text,
+                title="[bold #d8bbff]Active VM Forwards[/]",
+                border_style=STYLES["divider"],
+            )
+        )
+
+
+def _print_memberships(
+    result: AutomationResult[UserDigestResult], STYLES: dict
+) -> None:
+    """Print membership information in a tree view."""
+    membership_tree = Tree(Text("Memberships", style=STYLES["subheader"]))
+
+    # Call Centers
+    if result.payload.call_center_membership:
+        cc_branch = membership_tree.add(
+            Text("📞 Call Centers", style=STYLES["version"])
+        )
+        for cc in result.payload.call_center_membership:
+            acd_state_color = (
+                STYLES["success"] if cc.agent_acd_state == "Available" else "#ffaa00"
+            )
+            acd_available_color = (
+                STYLES["success"] if cc.agent_cc_available == "true" else "#ff5555"
+            )
+            cc_branch.add(
+                f"[{STYLES['value']}]{cc.call_center_name}[/] - "
+                f"[{STYLES['label']}]{cc.call_center_id}[/] - "
+                f"[{acd_state_color}]{cc.agent_acd_state}[/] - "
+                f"[{acd_available_color}]Available for CC {'✓' if cc.agent_cc_available == 'true' else '✗'}[/]"
+            )
+
+    # Hunt Groups
+    if result.payload.hunt_group_membership:
+        hg_branch = membership_tree.add(Text("🎯 Hunt Groups", style=STYLES["version"]))
+        for hg in result.payload.hunt_group_membership:
+            hg_branch.add(
+                f"[{STYLES['value']}]{hg.hunt_group_name}[/] - "
+                f"[{STYLES['label']}]{hg.hunt_group_id}[/]"
+            )
+
+    # Pickup Groups
+    if result.payload.call_pickup_group_membership:
+        cpu = result.payload.call_pickup_group_membership
+        pu_branch = membership_tree.add(
+            Text("📫 Call Pickup Groups", style=STYLES["version"])
+        )
+        pu_branch.add(f"[{STYLES['value']}]{cpu.call_pickup_group_name}")
+
+    console.print(Panel(membership_tree, border_style=STYLES["divider"]))
+
+
+def _print_devices(user_details, STYLES: dict) -> None:
+    """Print registered devices information."""
+    if user_details.registered_devices:
+        device_table = Table(
+            box=box.SIMPLE, show_header=True, padding=(0, 2), expand=True
+        )
+        device_table.add_column("Device Name", style=STYLES["value"], min_width=20)
+        device_table.add_column("Type", style=STYLES["label"], min_width=15)
+        device_table.add_column("Lineport", style=STYLES["label"], min_width=15)
+
+        for device in user_details.registered_devices:
+            device_table.add_row(
+                device.device_name or "N/A",
+                device.endpoint_type or "N/A",
+                device.line_port or "N/A",
+            )
+
+        console.print(
+            Panel(
+                device_table,
+                title="[bold #d8bbff]Devices[/]",
+                border_style=STYLES["divider"],
+            )
+        )
 
 
 def _format_audit_output(
@@ -279,4 +540,49 @@ def _group_audit(service_provider_id: str, group_id: str):
     except Exception as e:
         if spinner:
             spinner.fail("✘ Error occurred during group audit.")
+        print(f"Error: {e}")
+
+
+@completer.automations.action(
+    "user_digest", display_meta="Perform a comprehensive audit of a user"
+)
+@completer.param(
+    Empty,
+    display_meta="User ID",
+    cast=str,
+)
+def _user_digest(user_id: str):
+    """
+    Perform a comprehensive audit of a user.
+
+    Args:
+        user_id: The ID of the user to audit.
+    """
+    try:
+        spinner = yaspin(text="Performing user digest...", color="cyan")
+        spinner.start()
+    except ValueError:
+        spinner = None
+        print("Performing user digest...")
+
+    try:
+        result = MERCURY_CLI.agent().automate.user_digest(
+            user_id=user_id,
+        )
+
+        if spinner:
+            spinner.stop()
+
+        if result.ok:
+            _format_user_digest_output(result)
+        else:
+            msg = f"✘ User digest failed for User ID '{user_id}'."
+            if spinner:
+                spinner.fail(msg)
+            else:
+                print(msg)
+
+    except Exception as e:
+        if spinner:
+            spinner.fail("✘ Error occurred during user digest.")
         print(f"Error: {e}")

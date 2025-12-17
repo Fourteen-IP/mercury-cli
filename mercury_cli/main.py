@@ -1,8 +1,11 @@
 import sys
+import os
 from importlib import metadata
 from prompt_toolkit.styles import Style
-from prompt_toolkit import print_formatted_text
-from prompt_toolkit.formatted_text import FormattedText
+from rich.panel import Panel
+from rich.text import Text
+from rich.console import Console
+from rich import box
 from prompt_toolkit import prompt
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
@@ -22,11 +25,17 @@ SPLASH_ART = """
 """
 
 # CSS Style for the CLI
-cli_style = Style.from_dict(MERCURY_CLI.css())
+cli_style = MERCURY_CLI.css()
 
 parser = argparse.ArgumentParser()  # For non interactive commands
 parser.add_argument("--no-login", required=False, action="store_true")
+parser.add_argument("--username", required=False, type=str)
+parser.add_argument("--password-env", required=False, type=str)
+parser.add_argument("--host", required=False, type=str)
+parser.add_argument("--action", required=False, type=str)
 args = parser.parse_args()
+
+console = Console()
 
 
 def show_splash() -> None:
@@ -34,26 +43,15 @@ def show_splash() -> None:
     Prints out the SPLASH_ART and welcome message to the console.
     """
 
-    output = []
-
-    output.append(("class:header", f"{SPLASH_ART}"))
-    output.append(
-        (
-            "class:header",
-            "Welcome to mercury_cli",
-        )
+    version = metadata.version("mercury-cli")
+    welcome_text = Text.assemble(
+        (SPLASH_ART, cli_style["header"]),
+        ("\nWelcome to mercury_cli ", cli_style["subheader"]),
+        (f"v{version}\n\n", cli_style["version"]),
+        ("─" * 60 + "\n", cli_style["divider"]),
+        justify="center",
     )
-    output.append(
-        (
-            "class:version",
-            f" v{metadata.version('mercury-cli')}\n",
-        )
-    )
-    output.append(
-        ("class:divider", "\n" + "─" * 80 + "\n"),
-    )
-
-    print_formatted_text(FormattedText(output), style=cli_style)
+    console.print(welcome_text, justify="center", overflow="crop", no_wrap=True)
 
 
 def authenticate() -> None:
@@ -80,11 +78,28 @@ def main():
     """
     show_splash()
 
-    while True:
-        try:  # If authentication fails, prompt again
-            if not args.no_login:  # Skip login if --no-login is provided
+    while True:  # If authentication fails, prompt again
+        try:
+            if (
+                args.username and args.password_env and args.host
+            ):  # Command line args provided
+                MERCURY_CLI.get().client_auth(
+                    username=args.username,
+                    password=os.getenv(args.password_env),
+                    host=args.host,
+                    tls=True,
+                )
+
+                if args.action:  # Run single action and exit
+                    MERCURY_CLI.completer().run_action(args.action)
+                    sys.exit()
+            elif not args.no_login:  # Skip login if --no-login is provided
                 authenticate()
             break
+        except AttributeError as ae:  # Avoid infinite loop on AttributeErrors
+            print(f"Authentication failed: {ae}")
+            print("Please try again.\n")
+            sys.exit()
         except Exception as e:
             print(f"Authentication failed: {e}")
             print("Please try again.\n")
@@ -92,7 +107,7 @@ def main():
 
     MERCURY_CLI.get().session_create(  # Create terminal prompt session
         message="mercury_cli >>> ",
-        style=cli_style,
+        style=Style.from_dict(cli_style),
         refresh_interval=1,
         completer=MERCURY_CLI.completer(),
         auto_suggest=AutoSuggestFromHistory(),
