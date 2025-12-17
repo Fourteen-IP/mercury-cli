@@ -1,6 +1,6 @@
 [project]
 name = "mercury-cli"
-version = "0.1.0-beta"
+version = "0.2.0-beta"
 description = "A CLI wrapper for Mercury-OCIP"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -11,11 +11,11 @@ authors = [
 ]
 dependencies = [
     "prompt-toolkit>=3.0.52",
-    "yaspin>=3.3.0",
     "argparse>=1.4.0",
     "asciimatics>=1.15.0",
-    "mercury-ocip>=0.1.3b0",
+    "mercury-ocip>=1.0.0b",
     "fourteen-prompt-toolkit-action-completer>=1.2.2",
+    "rich>=14.2.0",
 ]
 
 [dependency-groups]

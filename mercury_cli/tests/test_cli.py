@@ -38,7 +38,7 @@ def test_show_splash(capsys):
     assert "Welcome to mercury_cli" in captured.out
 
 
-@patch("mercury_cli.main.prompt")
+@patch("mercury_cli.main.Prompt.ask")
 @patch("mercury_cli.globals.MERCURY_CLI.get")
 def test_authenticate_flow(mock_cli_get, mock_prompt):
     """Test the authenticate function flow with valid inputs."""

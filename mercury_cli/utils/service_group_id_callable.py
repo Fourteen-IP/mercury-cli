@@ -60,13 +60,17 @@ def _get_group_id_completions(
         return []
 
     try:
-        client = MERCURY_CLI.client()
-        groups: GroupGetListInServiceProviderPagedSortedListResponse = client.command(
-            GroupGetListInServiceProviderPagedSortedListRequest(
-                service_provider_id=service_provider_id
+        groups: GroupGetListInServiceProviderPagedSortedListResponse = (
+            MERCURY_CLI.client().command(
+                GroupGetListInServiceProviderPagedSortedListRequest(
+                    service_provider_id=service_provider_id
+                )
             )
         )
-        group_ids = [g.get("group_id", "") for g in getattr(groups, "group_table", [])]
+
+        group_table = groups.group_table.to_dict() if groups.group_table else []
+
+        group_ids = [g.get("group_id", "") for g in group_table]
         if value:
             group_ids = [gid for gid in group_ids if str(gid).startswith(value)]
         return group_ids
@@ -90,16 +94,20 @@ def _get_service_provider_id_completions(
     """
     service_providers: Optional[ServiceProviderGetListResponse] = None
     try:
-        client = MERCURY_CLI.client()
-        service_providers = client.command(ServiceProviderGetListRequest())
+        service_providers = MERCURY_CLI.client().command(
+            ServiceProviderGetListRequest()
+        )
+
+        service_provider_table = (
+            service_providers.service_provider_table.to_dict()
+            if service_providers.service_provider_table
+            else []
+        )
     except Exception:
         return []
 
     try:
-        sp_ids = [
-            sp.get("service_provider_id", "")
-            for sp in getattr(service_providers, "service_provider_table", [])
-        ]
+        sp_ids = [sp.get("service_provider_id", "") for sp in service_provider_table]
         if value:
             sp_ids = [sid for sid in sp_ids if str(sid).startswith(value)]
         return sp_ids

@@ -2,6 +2,8 @@ from action_completer import ActionCompleter
 from mercury_ocip import Client
 from mercury_ocip import Agent
 from prompt_toolkit import PromptSession
+from rich.console import Console
+from rich.theme import Theme
 
 
 class MERCURY_CLI:
@@ -18,6 +20,7 @@ class MERCURY_CLI:
     __client: Client = None
     __session: PromptSession = None
     __agent: Agent = None
+    __console: Console = None
 
     def __new__(cls: "MERCURY_CLI"):
         """
@@ -34,19 +37,22 @@ class MERCURY_CLI:
         Initializes the action completer for the CLI.
         """
         self.__completer = ActionCompleter()
-        self.__css = {
-            "header": "bold #deaaff",
-            "subheader": "bold #d8bbff",
-            "version": "bold #c0fdff",
-            "divider": "#666666",
-            "separator": "#666666",
-            "label": "#ffffff",
-            "value": "#87d787",
-            "success": "#00ff00 bold",
-            "toolbar.status": "bg:#005577 #ffffff",
-            "toolbar.context": "bg:#333333 #ffffff",
-            "prompt": "ansicyan bold #c0fdff",
-        }
+        self.__console = Console(
+            theme=Theme(
+                {
+                    "header": "bold #deaaff",
+                    "subheader": "bold #d8bbff",
+                    "version": "bold #c0fdff",
+                    "divider": "#666666",
+                    "separator": "#666666",
+                    "label": "#ffffff",
+                    "value": "#87d787",
+                    "success": "bold #C3EBC3",
+                    "error": "bold #FFB6B0",
+                    "prompt": "bold #c0fdff",
+                }
+            )
+        )
 
     def client_auth(self, username: str, password: str, host: str, tls: bool = True):
         """
@@ -134,14 +140,14 @@ class MERCURY_CLI:
         return MERCURY_CLI.__instance.__agent
 
     @staticmethod
-    def css() -> dict:
+    def console() -> Console:
         """
-        Retrieves the CSS style configuration dictionary.
+        Retrieves the Rich console instance.
 
         Returns:
-            dict: The CSS configuration for prompt_toolkit styling.
+            Console: The Rich console for formatted output.
         """
-        return MERCURY_CLI.__instance.__css
+        return MERCURY_CLI.__instance.__console
 
 
 MERCURY_CLI()

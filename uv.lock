@@ -492,6 +492,18 @@ wheels = [
 ]
 
 [[package]]
+name = "markdown-it-py"
+version = "4.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mdurl" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5b/f5/4ec618ed16cc4f8fb3b701563655a69816155e79e24a17b651541804721d/markdown_it_py-4.0.0.tar.gz", hash = "sha256:cb0a2b4aa34f932c007117b194e945bd74e0ec24133ceb5bac59009cda1cb9f3", size = 73070, upload-time = "2025-08-11T12:57:52.854Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/94/54/e7d793b573f298e1c9013b8c4dade17d481164aa517d1d7148619c2cedbf/markdown_it_py-4.0.0-py3-none-any.whl", hash = "sha256:87327c59b172c5011896038353a81343b6754500a08cd7a4973bb48c6d578147", size = 87321, upload-time = "2025-08-11T12:57:51.923Z" },
+]
+
+[[package]]
 name = "markupsafe"
 version = "3.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -555,8 +567,17 @@ wheels = [
 ]
 
 [[package]]
+name = "mdurl"
+version = "0.1.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba", size = 8729, upload-time = "2022-08-14T12:40:10.846Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
+]
+
+[[package]]
 name = "mercury-cli"
-version = "1.3.3"
+version = "0.2.0b0"
 source = { editable = "." }
 dependencies = [
     { name = "argparse" },
@@ -564,7 +585,7 @@ dependencies = [
     { name = "fourteen-prompt-toolkit-action-completer" },
     { name = "mercury-ocip" },
     { name = "prompt-toolkit" },
-    { name = "yaspin" },
+    { name = "rich" },
 ]
 
 [package.dev-dependencies]
@@ -586,9 +607,9 @@ requires-dist = [
     { name = "argparse", specifier = ">=1.4.0" },
     { name = "asciimatics", specifier = ">=1.15.0" },
     { name = "fourteen-prompt-toolkit-action-completer", specifier = ">=1.2.2" },
-    { name = "mercury-ocip", specifier = ">=0.1.3b0" },
+    { name = "mercury-ocip", specifier = ">=1.0.0b0" },
     { name = "prompt-toolkit", specifier = ">=3.0.52" },
-    { name = "yaspin", specifier = ">=3.3.0" },
+    { name = "rich", specifier = ">=14.2.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -605,7 +626,7 @@ docs = [
 
 [[package]]
 name = "mercury-ocip"
-version = "0.1.3b0"
+version = "1.0.0b0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asyncio" },
@@ -615,11 +636,12 @@ dependencies = [
     { name = "pydantic" },
     { name = "requests" },
     { name = "types-lxml" },
+    { name = "xmltodict" },
     { name = "zeep" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8b/64/33e285d7b68e8312e23ae25e4e3e4079c95c929b54a6eabf37059363f828/mercury_ocip-0.1.3b0.tar.gz", hash = "sha256:7404e2e2dc2950cddae8a1b842650408eaeb48f9b9200855d634f7f15c84109b", size = 490768, upload-time = "2025-12-10T15:33:22.787Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/60/89/429635619667a31e3cba038498700e113e1a12bd9e1fc2668db5b093dc91/mercury_ocip-1.0.0b0.tar.gz", hash = "sha256:574b2123eaa84099a5220579ad7e5640362a7fbe96e96531ed3ce642ee8d7a5e", size = 494670, upload-time = "2025-12-17T12:59:45.314Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/17/7f/a50ab37d2a586427acb5dc5475d67773f235881da16f21621d4a272dc574/mercury_ocip-0.1.3b0-py3-none-any.whl", hash = "sha256:fb247a3860190c61d71cc1d519fb2d9820f1cc879029b0bc1b42d5c150953db7", size = 501496, upload-time = "2025-12-10T15:33:21.254Z" },
+    { url = "https://files.pythonhosted.org/packages/57/60/fa4e1464e3fe09ed6245a691ce82a4986d0782e2d86c07f9313ad956b3cf/mercury_ocip-1.0.0b0-py3-none-any.whl", hash = "sha256:2357a9147d311c2d8f320c28e230af35ecbd6c5dbb9e041de6deff3f10298f4b", size = 505858, upload-time = "2025-12-17T12:59:43.684Z" },
 ]
 
 [[package]]
@@ -1374,6 +1396,19 @@ wheels = [
 ]
 
 [[package]]
+name = "rich"
+version = "14.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "markdown-it-py" },
+    { name = "pygments" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fb/d2/8920e102050a0de7bfabeb4c4614a49248cf8d5d7a8d01885fbb24dc767a/rich-14.2.0.tar.gz", hash = "sha256:73ff50c7c0c1c77c8243079283f4edb376f0f6442433aecb8ce7e6d0b92d1fe4", size = 219990, upload-time = "2025-10-09T14:16:53.064Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/25/7a/b0178788f8dc6cafce37a212c99565fa1fe7872c70c6c9c1e1a372d9d88f/rich-14.2.0-py3-none-any.whl", hash = "sha256:76bc51fe2e57d2b1be1f96c524b890b816e334ab4c1e45888799bfaab0021edd", size = 243393, upload-time = "2025-10-09T14:16:51.245Z" },
+]
+
+[[package]]
 name = "six"
 version = "1.17.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1389,15 +1424,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/6d/e6/21ccce3262dd4889aa3332e5a119a3491a95e8f60939870a3a035aabac0d/soupsieve-2.8.tar.gz", hash = "sha256:e2dd4a40a628cb5f28f6d4b0db8800b8f581b65bb380b97de22ba5ca8d72572f", size = 103472, upload-time = "2025-08-27T15:39:51.78Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/14/a0/bb38d3b76b8cae341dad93a2dd83ab7462e6dbcdd84d43f54ee60a8dc167/soupsieve-2.8-py3-none-any.whl", hash = "sha256:0cc76456a30e20f5d7f2e14a98a4ae2ee4e5abdc7c5ea0aafe795f344bc7984c", size = 36679, upload-time = "2025-08-27T15:39:50.179Z" },
-]
-
-[[package]]
-name = "termcolor"
-version = "3.1.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ca/6c/3d75c196ac07ac8749600b60b03f4f6094d54e132c4d94ebac6ee0e0add0/termcolor-3.1.0.tar.gz", hash = "sha256:6a6dd7fbee581909eeec6a756cff1d7f7c376063b14e4a298dc4980309e55970", size = 14324, upload-time = "2025-04-30T11:37:53.791Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/4f/bd/de8d508070629b6d84a30d01d57e4a65c69aa7f5abe7560b8fad3b50ea59/termcolor-3.1.0-py3-none-any.whl", hash = "sha256:591dd26b5c2ce03b9e43f391264626557873ce1d379019786f99b0c2bee140aa", size = 7684, upload-time = "2025-04-30T11:37:52.382Z" },
 ]
 
 [[package]]
@@ -1500,15 +1526,12 @@ wheels = [
 ]
 
 [[package]]
-name = "yaspin"
-version = "3.3.0"
+name = "xmltodict"
+version = "1.0.2"
 source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "termcolor" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/f9/cd/3d2877a5558fdad6de4166fa0160dc49cb1382820cd955753c67b56facd2/yaspin-3.3.0.tar.gz", hash = "sha256:505c9a44c6e3723a1bee8f7a17a055b17475176b74dd93e468fa8db48c172a41", size = 42411, upload-time = "2025-10-11T08:52:15.416Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6a/aa/917ceeed4dbb80d2f04dbd0c784b7ee7bba8ae5a54837ef0e5e062cd3cfb/xmltodict-1.0.2.tar.gz", hash = "sha256:54306780b7c2175a3967cad1db92f218207e5bc1aba697d887807c0fb68b7649", size = 25725, upload-time = "2025-09-17T21:59:26.459Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2c/bd/980187b627f9c5126ecbe909cc23f7d2c23ea4b046b2d3511d80ea0a8b79/yaspin-3.3.0-py3-none-any.whl", hash = "sha256:ab5113be4b34ef33f7d4d97be9b6867101ad020c2fb02bc92e3137c75b06d712", size = 21800, upload-time = "2025-10-11T08:52:13.932Z" },
+    { url = "https://files.pythonhosted.org/packages/c0/20/69a0e6058bc5ea74892d089d64dfc3a62ba78917ec5e2cfa70f7c92ba3a5/xmltodict-1.0.2-py3-none-any.whl", hash = "sha256:62d0fddb0dcbc9f642745d8bbf4d81fd17d6dfaec5a15b5c1876300aad92af0d", size = 13893, upload-time = "2025-09-17T21:59:24.859Z" },
 ]
 
 [[package]]
