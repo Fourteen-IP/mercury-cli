@@ -52,10 +52,7 @@ def _print_header() -> None:
     """Print the header panel."""
     console.print(
         Panel(
-            Text(
-                "[header]User Digest Report[/]",
-                justify="center",
-            ),
+            Text("User Digest Report", style="header", justify="center"),
             style="divider",
         )
     )
@@ -73,7 +70,8 @@ def _print_basic_info(user_info, user_details) -> None:
 
     # Row 1: Name, Extension, DND Status
     dnd_status = "🔇 ON" if user_details.dnd_status == "true" else "🔊 OFF"
-    dnd_color = "failure" if user_details.dnd_status == "true" else "success"
+    dnd_color = "#ff5555" if user_details.dnd_status == "true" else "success"
+
     info_table.add_row(
         "Name",
         f"{user_info.first_name} {user_info.last_name}",
@@ -199,7 +197,9 @@ def _print_voicemail_forwarding(user_details) -> None:
         )
 
 
-def _print_memberships(result: AutomationResult[UserDigestResult]) -> None:
+def _print_memberships(
+    result: AutomationResult[UserDigestResult],
+) -> None:
     """Print membership information in a tree view."""
     membership_tree = Tree(Text("Memberships", style="subheader"))
 
@@ -264,14 +264,14 @@ def _print_devices(user_details) -> None:
 
 
 def _format_audit_output(result: AutomationResult) -> None:
-    """Display audit result with Rich formatting."""
+    """Format and display audit result using Rich."""
 
     audit = result.payload
 
     # Header
     console.print(
         Panel(
-            Text("GROUP AUDIT REPORT", justify="center", style="header"),
+            Text("Group Audit Report", style="header", justify="center"),
             style="divider",
         )
     )
@@ -280,78 +280,121 @@ def _format_audit_output(result: AutomationResult) -> None:
     if audit.group_details:
         details = audit.group_details
 
-        info_table = Table(box=None, show_header=False, padding=(0, 2), expand=True)
-        info_table.add_column(style="label", width=30)
-        info_table.add_column(style="value")
+        details_table = Table(box=None, show_header=False, padding=(0, 2), expand=True)
+        details_table.add_column(style="label", width=30)
+        details_table.add_column(style="value")
 
-        info_table.add_row("Group Name", details.group_name or "N/A")
-        info_table.add_row("Group ID", details.group_id or "N/A")
-        info_table.add_row("Service Provider ID", details.service_provider_id or "N/A")
-        info_table.add_row("Default Domain", details.default_domain or "N/A")
+        details_table.add_row("Group Name", details.group_name or "N/A")
+        details_table.add_row("Group ID", details.group_id or "N/A")
+        details_table.add_row(
+            "Service Provider ID", details.service_provider_id or "N/A"
+        )
+        details_table.add_row("Default Domain", details.default_domain or "N/A")
 
         if hasattr(details, "user_count") and hasattr(details, "user_limit"):
-            info_table.add_row(
+            details_table.add_row(
                 "User Count", f"{details.user_count} / {details.user_limit}"
             )
 
-        info_table.add_row(
-            "Time Zone",
-            details.time_zone_display_name or details.time_zone or "N/A",
+        details_table.add_row(
+            "Time Zone", details.time_zone_display_name or details.time_zone or "N/A"
         )
 
         if hasattr(details, "calling_line_id_name"):
-            info_table.add_row(
+            details_table.add_row(
                 "Calling Line ID Name", details.calling_line_id_name or "N/A"
             )
 
         if hasattr(details, "calling_line_id_phone_number"):
-            info_table.add_row(
+            details_table.add_row(
                 "Calling Line ID Phone", details.calling_line_id_phone_number or "N/A"
             )
 
         if hasattr(details, "calling_line_id_display_phone_number"):
-            info_table.add_row(
+            details_table.add_row(
                 "Display Phone Number",
                 details.calling_line_id_display_phone_number or "N/A",
             )
 
         console.print(
             Panel(
-                info_table,
-                title="[bold #d8bbff]📋 Group Details[/]",
+                details_table,
+                title="[bold #d8bbff]Group Details[/]",
                 border_style="divider",
             )
         )
 
     # License Breakdown - Group Services
-    _print_service_table(
-        "🔧 Group Services Authorization",
-        audit.license_breakdown.group_services_authorization_table
-        if audit.license_breakdown
-        else None,
-    )
+    if (
+        audit.license_breakdown
+        and audit.license_breakdown.group_services_authorization_table
+    ):
+        services_table = Table(box=box.SIMPLE, show_header=True, expand=True)
+        services_table.add_column("Service", style="label")
+        services_table.add_column("Count", style="value", justify="right")
+
+        for service, count in sorted(
+            audit.license_breakdown.group_services_authorization_table.items()
+        ):
+            services_table.add_row(service, str(count))
+
+        console.print(
+            Panel(
+                services_table,
+                title="[bold #d8bbff]Group Services Authorization[/]",
+                border_style="divider",
+            )
+        )
 
     # License Breakdown - Service Packs
-    _print_service_table(
-        "📦 Service Packs Authorization",
-        audit.license_breakdown.service_packs_authorization_table
-        if audit.license_breakdown
-        else None,
-    )
+    if (
+        audit.license_breakdown
+        and audit.license_breakdown.service_packs_authorization_table
+    ):
+        packs_table = Table(box=box.SIMPLE, show_header=True, expand=True)
+        packs_table.add_column("Service Pack", style="label")
+        packs_table.add_column("Count", style="value", justify="right")
+
+        for pack, count in sorted(
+            audit.license_breakdown.service_packs_authorization_table.items()
+        ):
+            packs_table.add_row(pack, str(count))
+
+        console.print(
+            Panel(
+                packs_table,
+                title="[bold #d8bbff]Service Packs Authorization[/]",
+                border_style="divider",
+            )
+        )
 
     # License Breakdown - User Services
-    _print_service_table(
-        "👤 User Services Authorization",
-        audit.license_breakdown.user_services_authorization_table
-        if audit.license_breakdown
-        else None,
-    )
+    if (
+        audit.license_breakdown
+        and audit.license_breakdown.user_services_authorization_table
+    ):
+        user_services_table = Table(box=box.SIMPLE, show_header=True, expand=True)
+        user_services_table.add_column("User Service", style="label")
+        user_services_table.add_column("Count", style="value", justify="right")
+
+        for service, count in sorted(
+            audit.license_breakdown.user_services_authorization_table.items()
+        ):
+            user_services_table.add_row(service, str(count))
+
+        console.print(
+            Panel(
+                user_services_table,
+                title="[bold #d8bbff]User Services Authorization[/]",
+                border_style="divider",
+            )
+        )
 
     # Group DNs
     if audit.group_dns:
-        dn_content = Text()
-        dn_content.append("Total DNs: ", style="label")
-        dn_content.append(f"{audit.group_dns.total}\n\n", style="value")
+        dns_text = Text()
+        dns_text.append("Total DNs: ", style="label")
+        dns_text.append(f"{audit.group_dns.total}\n\n", style="value")
 
         if audit.group_dns.numbers:
             sorted_numbers = sorted(
@@ -359,56 +402,23 @@ def _format_audit_output(result: AutomationResult) -> None:
                 key=lambda x: int(x) if x.isdigit() else float("inf"),
             )
             numbers_str = ", ".join(sorted_numbers)
-            dn_content.append(numbers_str, style="value")
+            dns_text.append(numbers_str, style="value")
         else:
-            dn_content.append("No directory numbers found", style="label")
+            dns_text.append("No directory numbers found", style="label")
 
         console.print(
             Panel(
-                dn_content,
-                title="[bold #d8bbff]📞 Group Directory Numbers[/]",
+                dns_text,
+                title="[bold #d8bbff]Group Directory Numbers[/]",
                 border_style="divider",
             )
         )
     else:
         console.print(
             Panel(
-                "Directory number information not available",
-                title="[bold #d8bbff]📞 Group Directory Numbers[/]",
+                Text("Directory number information not available", style="label"),
+                title="[bold #d8bbff]Group Directory Numbers[/]",
                 border_style="divider",
-                style="label",
-            )
-        )
-
-    console.print("\n" + "─" * 80 + "\n", style="divider")
-
-
-def _print_service_table(title: str, services_dict: dict | None) -> None:
-    """Helper function to print service authorization tables."""
-    if services_dict:
-        service_table = Table(
-            box=box.SIMPLE, show_header=False, padding=(0, 2), expand=True
-        )
-        service_table.add_column(style="label", width=50)
-        service_table.add_column(style="value", justify="right", width=10)
-
-        for service, count in sorted(services_dict.items()):
-            service_table.add_row(service, str(count))
-
-        console.print(
-            Panel(
-                service_table,
-                title=f"[bold #d8bbff]{title}[/]",
-                border_style="divider",
-            )
-        )
-    else:
-        console.print(
-            Panel(
-                f"No {title.lower().split()[0]} found",
-                title=f"[bold #d8bbff]{title}[/]",
-                border_style="divider",
-                style="label",
             )
         )
 
@@ -439,29 +449,18 @@ def _group_audit(service_provider_id: str, group_id: str):
                 group_id=group_id,
             )
 
-            status.stop()
-
-            if result and result.ok:
+            if result.ok:
+                status.stop()
                 _format_audit_output(result)
-            elif result:
-                error_msg = (
-                    getattr(result, "message", None)
-                    or getattr(result, "error", None)
-                    or "Unknown error"
-                )
-                console.print(
-                    f"✘ Group audit failed for Group ID '{group_id}': {error_msg}",
-                    style="error",
-                )
             else:
+                status.stop()
                 console.print(
-                    f"✘ Group audit returned no result for Group ID '{group_id}'.",
-                    style="error",
+                    f"✘ Group audit failed for Group ID '{group_id}'.", style="red"
                 )
 
         except Exception as e:
             status.stop()
-            console.print(f"✘ Error during group audit: {str(e)}", style="error")
+            console.print(f"✘ {e}", style="red")
 
 
 @completer.automations.action(
