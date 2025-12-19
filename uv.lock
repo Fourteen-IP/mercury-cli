@@ -607,7 +607,7 @@ requires-dist = [
     { name = "argparse", specifier = ">=1.4.0" },
     { name = "asciimatics", specifier = ">=1.15.0" },
     { name = "fourteen-prompt-toolkit-action-completer", specifier = ">=1.2.2" },
-    { name = "mercury-ocip", specifier = ">=1.0.0b0" },
+    { name = "mercury-ocip", specifier = ">=1.0.1b0" },
     { name = "prompt-toolkit", specifier = ">=3.0.52" },
     { name = "rich", specifier = ">=14.2.0" },
 ]
@@ -626,7 +626,7 @@ docs = [
 
 [[package]]
 name = "mercury-ocip"
-version = "1.0.0b0"
+version = "1.0.1b0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asyncio" },
@@ -639,9 +639,9 @@ dependencies = [
     { name = "xmltodict" },
     { name = "zeep" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/60/89/429635619667a31e3cba038498700e113e1a12bd9e1fc2668db5b093dc91/mercury_ocip-1.0.0b0.tar.gz", hash = "sha256:574b2123eaa84099a5220579ad7e5640362a7fbe96e96531ed3ce642ee8d7a5e", size = 494670, upload-time = "2025-12-17T12:59:45.314Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e4/b0/1617f65cc07c176909c8b0b4a78a81a1c9472b61e30afc464ca08a671310/mercury_ocip-1.0.1b0.tar.gz", hash = "sha256:ab2286adc60e5ef81a62792278b6dd348643027b04c9ce68ff29594908694f95", size = 494983, upload-time = "2025-12-19T12:06:27.702Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/57/60/fa4e1464e3fe09ed6245a691ce82a4986d0782e2d86c07f9313ad956b3cf/mercury_ocip-1.0.0b0-py3-none-any.whl", hash = "sha256:2357a9147d311c2d8f320c28e230af35ecbd6c5dbb9e041de6deff3f10298f4b", size = 505858, upload-time = "2025-12-17T12:59:43.684Z" },
+    { url = "https://files.pythonhosted.org/packages/c2/19/9df429760cfd1e6b1f709416c83daf8f4f846d2bed306e6594639df0a190/mercury_ocip-1.0.1b0-py3-none-any.whl", hash = "sha256:3eb836f1f63387be1830d9445aab0dcaa9e359f4a8b51cdc2116d512bb505c7f", size = 506201, upload-time = "2025-12-19T12:06:26.334Z" },
 ]
 
 [[package]]
@@ -1419,11 +1419,11 @@ wheels = [
 
 [[package]]
 name = "soupsieve"
-version = "2.8"
+version = "2.8.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/6d/e6/21ccce3262dd4889aa3332e5a119a3491a95e8f60939870a3a035aabac0d/soupsieve-2.8.tar.gz", hash = "sha256:e2dd4a40a628cb5f28f6d4b0db8800b8f581b65bb380b97de22ba5ca8d72572f", size = 103472, upload-time = "2025-08-27T15:39:51.78Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/89/23/adf3796d740536d63a6fbda113d07e60c734b6ed5d3058d1e47fc0495e47/soupsieve-2.8.1.tar.gz", hash = "sha256:4cf733bc50fa805f5df4b8ef4740fc0e0fa6218cf3006269afd3f9d6d80fd350", size = 117856, upload-time = "2025-12-18T13:50:34.655Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/14/a0/bb38d3b76b8cae341dad93a2dd83ab7462e6dbcdd84d43f54ee60a8dc167/soupsieve-2.8-py3-none-any.whl", hash = "sha256:0cc76456a30e20f5d7f2e14a98a4ae2ee4e5abdc7c5ea0aafe795f344bc7984c", size = 36679, upload-time = "2025-08-27T15:39:50.179Z" },
+    { url = "https://files.pythonhosted.org/packages/48/f3/b67d6ea49ca9154453b6d70b34ea22f3996b9fa55da105a79d8732227adc/soupsieve-2.8.1-py3-none-any.whl", hash = "sha256:a11fe2a6f3d76ab3cf2de04eb339c1be5b506a8a47f2ceb6d139803177f85434", size = 36710, upload-time = "2025-12-18T13:50:33.267Z" },
 ]
 
 [[package]]

@@ -7,9 +7,6 @@ from mercury_cli.utils.service_group_id_callable import (
     _get_service_provider_id_completions,
 )
 from mercury_ocip.automate.base_automation import AutomationResult
-from prompt_toolkit import print_formatted_text
-from prompt_toolkit.formatted_text import FormattedText
-from prompt_toolkit.styles import Style
 
 from rich.table import Table
 from rich.panel import Panel
@@ -28,8 +25,6 @@ def _format_user_digest_output(result: AutomationResult[UserDigestResult]) -> No
     Display a beautifully formatted user digest using Rich.
     """
 
-    STYLES = MERCURY_CLI.css()
-
     try:
         user_details: UserDetailsResult = result.payload.user_details
         user_info = user_details.user_info
@@ -38,11 +33,11 @@ def _format_user_digest_output(result: AutomationResult[UserDigestResult]) -> No
         _print_header()
 
         # Main info sections
-        _print_basic_info(user_info, user_details, STYLES)
-        _print_call_forwarding(user_details, STYLES)
-        _print_voicemail_forwarding(user_details, STYLES)
-        _print_memberships(result, STYLES)
-        _print_devices(user_details, STYLES)
+        _print_basic_info(user_info, user_details)
+        _print_call_forwarding(user_details)
+        _print_voicemail_forwarding(user_details)
+        _print_memberships(result)
+        _print_devices(user_details)
 
     except AttributeError as e:
         console.print(f"Error: Missing data field - {e}", style="red")
@@ -52,28 +47,27 @@ def _format_user_digest_output(result: AutomationResult[UserDigestResult]) -> No
 
 def _print_header() -> None:
     """Print the header panel."""
-    STYLES = MERCURY_CLI.css()
     console.print(
         Panel(
-            Text("User Digest Report", style=STYLES["header"], justify="center"),
-            style=STYLES["divider"],
+            Text("User Digest Report", style="header", justify="center"),
+            style="divider",
         )
     )
 
 
-def _print_basic_info(user_info, user_details, STYLES: dict) -> None:
+def _print_basic_info(user_info, user_details) -> None:
     """Print basic user information in a 3-column layout."""
     info_table = Table(box=None, show_header=False, padding=(0, 2), expand=True)
-    info_table.add_column(style=STYLES["label"], width=18)
-    info_table.add_column(style=STYLES["value"])
-    info_table.add_column(style=STYLES["label"], width=18)
-    info_table.add_column(style=STYLES["value"])
-    info_table.add_column(style=STYLES["label"], width=18)
-    info_table.add_column(style=STYLES["value"])
+    info_table.add_column(style="label", width=18)
+    info_table.add_column(style="value")
+    info_table.add_column(style="label", width=18)
+    info_table.add_column(style="value")
+    info_table.add_column(style="label", width=18)
+    info_table.add_column(style="value")
 
     # Row 1: Name, Extension, DND Status
     dnd_status = "🔇 ON" if user_details.dnd_status == "true" else "🔊 OFF"
-    dnd_color = "#ff5555" if user_details.dnd_status == "true" else STYLES["success"]
+    dnd_color = "#ff5555" if user_details.dnd_status == "true" else "success"
 
     info_table.add_row(
         "Name",
@@ -108,12 +102,12 @@ def _print_basic_info(user_info, user_details, STYLES: dict) -> None:
         Panel(
             info_table,
             title="[bold #d8bbff]Basic Info[/]",
-            border_style=STYLES["divider"],
+            border_style="divider",
         )
     )
 
 
-def _print_call_forwarding(user_details, STYLES: dict) -> None:
+def _print_call_forwarding(user_details) -> None:
     """Print call forwarding information."""
     # Regular forwards
     forwards_active = [
@@ -126,18 +120,16 @@ def _print_call_forwarding(user_details, STYLES: dict) -> None:
         forward_text = Text(justify="center")
         for i, fwd in enumerate(forwards_active):
             if i > 0:
-                forward_text.append(" | ", style=STYLES["separator"])
+                forward_text.append(" | ", style="separator")
             forward_text.append(
-                f"{fwd.variant.replace('_', ' ').title()}: ", style=STYLES["label"]
+                f"{fwd.variant.replace('_', ' ').title()}: ", style="label"
             )
-            forward_text.append(
-                fwd.forward_to_phone_number or "—", style=STYLES["success"]
-            )
+            forward_text.append(fwd.forward_to_phone_number or "—", style="success")
         console.print(
             Panel(
                 forward_text,
                 title="[bold #d8bbff]Active Forwards[/]",
-                border_style=STYLES["divider"],
+                border_style="divider",
             )
         )
 
@@ -151,10 +143,10 @@ def _print_call_forwarding(user_details, STYLES: dict) -> None:
     if selective_forwards:
         for fwd in selective_forwards:
             selective_table = Table(box=box.SIMPLE, show_header=True, expand=True)
-            selective_table.add_column("Criteria Name", style=STYLES["value"])
-            selective_table.add_column("Forward To", style=STYLES["success"])
-            selective_table.add_column("Time Schedule", style=STYLES["label"])
-            selective_table.add_column("Call From", style=STYLES["label"])
+            selective_table.add_column("Criteria Name", style="value")
+            selective_table.add_column("Forward To", style="success")
+            selective_table.add_column("Time Schedule", style="label")
+            selective_table.add_column("Call From", style="label")
 
             if fwd.selective_criteria and fwd.selective_criteria.row:
                 for row in fwd.selective_criteria.row:
@@ -169,12 +161,12 @@ def _print_call_forwarding(user_details, STYLES: dict) -> None:
                 Panel(
                     selective_table,
                     title="[bold #d8bbff]Selective Call Forwarding[/]",
-                    border_style=STYLES["divider"],
+                    border_style="divider",
                 ),
             )
 
 
-def _print_voicemail_forwarding(user_details, STYLES: dict) -> None:
+def _print_voicemail_forwarding(user_details) -> None:
     """Print voicemail forwarding information."""
     vm_forwards_active = [
         f for f in user_details.forwards.voicemail_forwarding if f.is_active == "true"
@@ -184,78 +176,73 @@ def _print_voicemail_forwarding(user_details, STYLES: dict) -> None:
         forward_text = Text(justify="center")
         for i, fwd in enumerate(vm_forwards_active):
             if i > 0:
-                forward_text.append(" | ", style=STYLES["separator"])
+                forward_text.append(" | ", style="separator")
             forward_text.append(
                 f"{fwd.variant.replace('voice_mail', 'vm').replace('_', ' ').title()}: ",
-                style=STYLES["label"],
+                style="label",
             )
             if fwd.is_active:
-                forward_text.append("✓", style=STYLES["success"])
+                forward_text.append("✓", style="success")
             else:
-                forward_text.append("✗", style=STYLES["error"])
+                forward_text.append("✗", style="error")
         console.print(
             Panel(
                 forward_text,
                 title="[bold #d8bbff]Active VM Forwards[/]",
-                border_style=STYLES["divider"],
+                border_style="divider",
             )
         )
 
 
 def _print_memberships(
-    result: AutomationResult[UserDigestResult], STYLES: dict
+    result: AutomationResult[UserDigestResult],
 ) -> None:
     """Print membership information in a tree view."""
-    membership_tree = Tree(Text("Memberships", style=STYLES["subheader"]))
+    membership_tree = Tree(Text("Memberships", style="subheader"))
 
     # Call Centers
     if result.payload.call_center_membership:
-        cc_branch = membership_tree.add(
-            Text("📞 Call Centers", style=STYLES["version"])
-        )
+        cc_branch = membership_tree.add(Text("📞 Call Centers", style="version"))
         for cc in result.payload.call_center_membership:
             acd_state_color = (
-                STYLES["success"] if cc.agent_acd_state == "Available" else "#ffaa00"
+                "success" if cc.agent_acd_state == "Available" else "#ffaa00"
             )
             acd_available_color = (
-                STYLES["success"] if cc.agent_cc_available == "true" else "#ff5555"
+                "success" if cc.agent_cc_available == "true" else "#ff5555"
             )
             cc_branch.add(
-                f"[{STYLES['value']}]{cc.call_center_name}[/] - "
-                f"[{STYLES['label']}]{cc.call_center_id}[/] - "
+                f"[value]{cc.call_center_name}[/] - "
+                f"[label]{cc.call_center_id}[/] - "
                 f"[{acd_state_color}]{cc.agent_acd_state}[/] - "
                 f"[{acd_available_color}]Available for CC {'✓' if cc.agent_cc_available == 'true' else '✗'}[/]"
             )
 
     # Hunt Groups
     if result.payload.hunt_group_membership:
-        hg_branch = membership_tree.add(Text("🎯 Hunt Groups", style=STYLES["version"]))
+        hg_branch = membership_tree.add(Text("🎯 Hunt Groups", style="version"))
         for hg in result.payload.hunt_group_membership:
             hg_branch.add(
-                f"[{STYLES['value']}]{hg.hunt_group_name}[/] - "
-                f"[{STYLES['label']}]{hg.hunt_group_id}[/]"
+                f"[value]{hg.hunt_group_name}[/] - [label]{hg.hunt_group_id}[/]"
             )
 
     # Pickup Groups
     if result.payload.call_pickup_group_membership:
         cpu = result.payload.call_pickup_group_membership
-        pu_branch = membership_tree.add(
-            Text("📫 Call Pickup Groups", style=STYLES["version"])
-        )
-        pu_branch.add(f"[{STYLES['value']}]{cpu.call_pickup_group_name}")
+        pu_branch = membership_tree.add(Text("📫 Call Pickup Groups", style="version"))
+        pu_branch.add(f"[value]{cpu.call_pickup_group_name}")
 
-    console.print(Panel(membership_tree, border_style=STYLES["divider"]))
+    console.print(Panel(membership_tree, border_style="divider"))
 
 
-def _print_devices(user_details, STYLES: dict) -> None:
+def _print_devices(user_details) -> None:
     """Print registered devices information."""
     if user_details.registered_devices:
         device_table = Table(
             box=box.SIMPLE, show_header=True, padding=(0, 2), expand=True
         )
-        device_table.add_column("Device Name", style=STYLES["value"], min_width=20)
-        device_table.add_column("Type", style=STYLES["label"], min_width=15)
-        device_table.add_column("Lineport", style=STYLES["label"], min_width=15)
+        device_table.add_column("Device Name", style="value", min_width=20)
+        device_table.add_column("Type", style="label", min_width=15)
+        device_table.add_column("Lineport", style="label", min_width=15)
 
         for device in user_details.registered_devices:
             device_table.add_row(
@@ -268,128 +255,143 @@ def _print_devices(user_details, STYLES: dict) -> None:
             Panel(
                 device_table,
                 title="[bold #d8bbff]Devices[/]",
-                border_style=STYLES["divider"],
+                border_style="divider",
             )
         )
 
 
-def _format_audit_output(
-    result: AutomationResult,
-) -> tuple[FormattedText, Style]:
-    """Format audit result with nice styling using prompt_toolkit."""
+def _format_audit_output(result: AutomationResult) -> None:
+    """Format and display audit result using Rich."""
 
-    style = Style.from_dict(MERCURY_CLI.css())
-
-    output = []
     audit = result.payload
 
     # Header
-    output.append(("class:header", "\n╔══════════════════════════════════════════╗\n"))
-    output.append(("class:header", "║        GROUP AUDIT REPORT                ║\n"))
-    output.append(("class:header", "╚══════════════════════════════════════════╝\n"))
+    console.print(
+        Panel(
+            Text("Group Audit Report", style="header", justify="center"),
+            style="divider",
+        )
+    )
 
     # Group Details Section
     if audit.group_details:
         details = audit.group_details
-        output.append(("class:subheader", "\n📋 GROUP DETAILS\n"))
-        output.append(("class:separator", "─" * 80 + "\n"))
 
-        output.append(("class:label", "  Group Name:              "))
-        output.append(("class:value", f"{details.group_name or 'N/A'}\n"))
+        details_table = Table(box=None, show_header=False, padding=(0, 2), expand=True)
+        details_table.add_column(style="label", width=30)
+        details_table.add_column(style="value")
 
-        output.append(("class:label", "  Group ID:                "))
-        output.append(("class:value", f"{details.group_id or 'N/A'}\n"))
-
-        output.append(("class:label", "  Service Provider ID:     "))
-        output.append(("class:value", f"{details.service_provider_id or 'N/A'}\n"))
-
-        output.append(("class:label", "  Default Domain:          "))
-        output.append(("class:value", f"{details.default_domain or 'N/A'}\n"))
+        details_table.add_row("Group Name", details.group_name or "N/A")
+        details_table.add_row("Group ID", details.group_id or "N/A")
+        details_table.add_row(
+            "Service Provider ID", details.service_provider_id or "N/A"
+        )
+        details_table.add_row("Default Domain", details.default_domain or "N/A")
 
         if hasattr(details, "user_count") and hasattr(details, "user_limit"):
-            output.append(("class:label", "  User Count:              "))
-            output.append(
-                ("class:value", f"{details.user_count} / {details.user_limit}\n")
+            details_table.add_row(
+                "User Count", f"{details.user_count} / {details.user_limit}"
             )
 
-        output.append(("class:label", "  Time Zone:               "))
-        output.append(
-            (
-                "class:value",
-                f"{details.time_zone_display_name or details.time_zone or 'N/A'}\n",
-            )
+        details_table.add_row(
+            "Time Zone", details.time_zone_display_name or details.time_zone or "N/A"
         )
 
         if hasattr(details, "calling_line_id_name"):
-            output.append(("class:label", "  Calling Line ID Name:    "))
-            output.append(("class:value", f"{details.calling_line_id_name or 'N/A'}\n"))
+            details_table.add_row(
+                "Calling Line ID Name", details.calling_line_id_name or "N/A"
+            )
 
         if hasattr(details, "calling_line_id_phone_number"):
-            output.append(("class:label", "  Calling Line ID Phone:   "))
-            output.append(
-                ("class:value", f"{details.calling_line_id_phone_number or 'N/A'}\n")
+            details_table.add_row(
+                "Calling Line ID Phone", details.calling_line_id_phone_number or "N/A"
             )
 
         if hasattr(details, "calling_line_id_display_phone_number"):
-            output.append(("class:label", "  Display Phone Number:    "))
-            output.append(
-                (
-                    "class:value",
-                    f"{details.calling_line_id_display_phone_number or 'N/A'}\n",
-                )
+            details_table.add_row(
+                "Display Phone Number",
+                details.calling_line_id_display_phone_number or "N/A",
             )
 
+        console.print(
+            Panel(
+                details_table,
+                title="[bold #d8bbff]Group Details[/]",
+                border_style="divider",
+            )
+        )
+
     # License Breakdown - Group Services
-    output.append(("class:subheader", "\n🔧 GROUP SERVICES AUTHORIZATION\n"))
-    output.append(("class:separator", "─" * 80 + "\n"))
     if (
         audit.license_breakdown
         and audit.license_breakdown.group_services_authorization_table
     ):
+        services_table = Table(box=box.SIMPLE, show_header=True, expand=True)
+        services_table.add_column("Service", style="label")
+        services_table.add_column("Count", style="value", justify="right")
+
         for service, count in sorted(
             audit.license_breakdown.group_services_authorization_table.items()
         ):
-            output.append(("class:label", f"  {service:<40} "))
-            output.append(("class:value", f"{count:>5}\n"))
-    else:
-        output.append(("class:label", "  No group services found\n"))
+            services_table.add_row(service, str(count))
+
+        console.print(
+            Panel(
+                services_table,
+                title="[bold #d8bbff]Group Services Authorization[/]",
+                border_style="divider",
+            )
+        )
 
     # License Breakdown - Service Packs
-    output.append(("class:subheader", "\n📦 SERVICE PACKS AUTHORIZATION\n"))
-    output.append(("class:separator", "─" * 80 + "\n"))
     if (
         audit.license_breakdown
         and audit.license_breakdown.service_packs_authorization_table
     ):
+        packs_table = Table(box=box.SIMPLE, show_header=True, expand=True)
+        packs_table.add_column("Service Pack", style="label")
+        packs_table.add_column("Count", style="value", justify="right")
+
         for pack, count in sorted(
             audit.license_breakdown.service_packs_authorization_table.items()
         ):
-            output.append(("class:label", f"  {pack:<40} "))
-            output.append(("class:value", f"{count:>5}\n"))
-    else:
-        output.append(("class:label", "  No service packs found\n"))
+            packs_table.add_row(pack, str(count))
+
+        console.print(
+            Panel(
+                packs_table,
+                title="[bold #d8bbff]Service Packs Authorization[/]",
+                border_style="divider",
+            )
+        )
 
     # License Breakdown - User Services
-    output.append(("class:subheader", "\n👤 USER SERVICES AUTHORIZATION\n"))
-    output.append(("class:separator", "─" * 80 + "\n"))
     if (
         audit.license_breakdown
         and audit.license_breakdown.user_services_authorization_table
     ):
+        user_services_table = Table(box=box.SIMPLE, show_header=True, expand=True)
+        user_services_table.add_column("User Service", style="label")
+        user_services_table.add_column("Count", style="value", justify="right")
+
         for service, count in sorted(
             audit.license_breakdown.user_services_authorization_table.items()
         ):
-            output.append(("class:label", f"  {service:<40} "))
-            output.append(("class:value", f"{count:>5}\n"))
-    else:
-        output.append(("class:label", "  No user services found\n"))
+            user_services_table.add_row(service, str(count))
+
+        console.print(
+            Panel(
+                user_services_table,
+                title="[bold #d8bbff]User Services Authorization[/]",
+                border_style="divider",
+            )
+        )
 
     # Group DNs
-    output.append(("class:subheader", "\n📞 GROUP DIRECTORY NUMBERS\n"))
-    output.append(("class:separator", "─" * 80 + "\n"))
     if audit.group_dns:
-        output.append(("class:label", "  Total DNs: "))
-        output.append(("class:value", f"{audit.group_dns.total}\n"))
+        dns_text = Text()
+        dns_text.append("Total DNs: ", style="label")
+        dns_text.append(f"{audit.group_dns.total}\n\n", style="value")
 
         if audit.group_dns.numbers:
             sorted_numbers = sorted(
@@ -397,33 +399,25 @@ def _format_audit_output(
                 key=lambda x: int(x) if x.isdigit() else float("inf"),
             )
             numbers_str = ", ".join(sorted_numbers)
-            max_line_length = 76
-            if len(numbers_str) <= max_line_length:
-                output.append(("class:value", f"  {numbers_str}\n"))
-            else:
-                words = numbers_str.split(", ")
-                current_line = "  "
-                for word in words:
-                    if (
-                        len(current_line) + len(word) + 2 > max_line_length
-                        and current_line.strip()
-                    ):
-                        output.append(("class:value", current_line.rstrip() + "\n"))
-                        current_line = "  " + word + ", "
-                    else:
-                        current_line += word + ", "
-                if current_line.strip():
-                    output.append(
-                        ("class:value", current_line.rstrip().rstrip(",") + "\n")
-                    )
+            dns_text.append(numbers_str, style="value")
         else:
-            output.append(("class:label", "  No directory numbers found\n"))
+            dns_text.append("No directory numbers found", style="label")
+
+        console.print(
+            Panel(
+                dns_text,
+                title="[bold #d8bbff]Group Directory Numbers[/]",
+                border_style="divider",
+            )
+        )
     else:
-        output.append(("class:label", "  Directory number information not available\n"))
-
-    output.append(("class:divider", "\n" + "─" * 80 + "\n\n"))
-
-    return FormattedText(output), style
+        console.print(
+            Panel(
+                Text("Directory number information not available", style="label"),
+                title="[bold #d8bbff]Group Directory Numbers[/]",
+                border_style="divider",
+            )
+        )
 
 
 @completer.automations.action(
@@ -454,8 +448,7 @@ def _group_audit(service_provider_id: str, group_id: str):
 
             if result.ok:
                 status.stop()
-                formatted_output, style = _format_audit_output(result)
-                print_formatted_text(formatted_output, style=style)
+                _format_audit_output(result)
             else:
                 status.stop()
                 console.print(
