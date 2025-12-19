@@ -13,7 +13,7 @@ dependencies = [
     "prompt-toolkit>=3.0.52",
     "argparse>=1.4.0",
     "asciimatics>=1.15.0",
-    "mercury-ocip>=1.0.0b",
+    "mercury-ocip",
     "fourteen-prompt-toolkit-action-completer>=1.2.2",
     "rich>=14.2.0",
 ]
@@ -79,3 +79,6 @@ allowed_tags = [
 ]
 minor_tags = ["feat"]
 patch_tags = ["fix", "perf", "refactor"]
+
+[tool.uv.sources]
+mercury-ocip = { path = "../mercury-ocip" }

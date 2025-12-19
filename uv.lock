@@ -607,7 +607,7 @@ requires-dist = [
     { name = "argparse", specifier = ">=1.4.0" },
     { name = "asciimatics", specifier = ">=1.15.0" },
     { name = "fourteen-prompt-toolkit-action-completer", specifier = ">=1.2.2" },
-    { name = "mercury-ocip", specifier = ">=1.0.0b0" },
+    { name = "mercury-ocip", directory = "../mercury-ocip" },
     { name = "prompt-toolkit", specifier = ">=3.0.52" },
     { name = "rich", specifier = ">=14.2.0" },
 ]
@@ -627,7 +627,7 @@ docs = [
 [[package]]
 name = "mercury-ocip"
 version = "1.0.0b0"
-source = { registry = "https://pypi.org/simple" }
+source = { directory = "../mercury-ocip" }
 dependencies = [
     { name = "asyncio" },
     { name = "attrs" },
@@ -639,9 +639,39 @@ dependencies = [
     { name = "xmltodict" },
     { name = "zeep" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/60/89/429635619667a31e3cba038498700e113e1a12bd9e1fc2668db5b093dc91/mercury_ocip-1.0.0b0.tar.gz", hash = "sha256:574b2123eaa84099a5220579ad7e5640362a7fbe96e96531ed3ce642ee8d7a5e", size = 494670, upload-time = "2025-12-17T12:59:45.314Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/57/60/fa4e1464e3fe09ed6245a691ce82a4986d0782e2d86c07f9313ad956b3cf/mercury_ocip-1.0.0b0-py3-none-any.whl", hash = "sha256:2357a9147d311c2d8f320c28e230af35ecbd6c5dbb9e041de6deff3f10298f4b", size = 505858, upload-time = "2025-12-17T12:59:43.684Z" },
+
+[package.metadata]
+requires-dist = [
+    { name = "asyncio", specifier = ">=3.4.3" },
+    { name = "attrs", specifier = ">=21.4.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "lxml-stubs", specifier = ">=0.5.1" },
+    { name = "pydantic", specifier = ">=2.11.7" },
+    { name = "requests", specifier = ">=2.32.3" },
+    { name = "types-lxml", specifier = ">=2025.3.30" },
+    { name = "xmltodict", specifier = ">=1.0.2" },
+    { name = "zeep", specifier = ">=4.3.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "mkdocs", specifier = ">=1.6.1" },
+    { name = "mkdocs-material", specifier = ">=9.6.15" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=0.29.1" },
+    { name = "pymdown-extensions", specifier = ">=10.16" },
+    { name = "pyrefly", specifier = ">=0.28.1" },
+    { name = "pytest", specifier = ">=8.3.4" },
+    { name = "pytest-asyncio", specifier = ">=1.1.0" },
+    { name = "ruff", specifier = ">=0.8.1" },
+]
+docs = [
+    { name = "mkdocs", specifier = ">=1.6.1" },
+    { name = "mkdocs-gen-files", specifier = ">=0.5.0" },
+    { name = "mkdocs-literate-nav", specifier = ">=0.6.2" },
+    { name = "mkdocs-material", specifier = ">=9.6.16" },
+    { name = "mkdocs-minify-html-plugin", specifier = ">=0.3.5" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=0.30.0" },
+    { name = "pymdown-extensions", specifier = ">=10.16.1" },
 ]
 
 [[package]]
