@@ -7,9 +7,6 @@ from mercury_cli.utils.service_group_id_callable import (
     _get_service_provider_id_completions,
 )
 from mercury_ocip.automate.base_automation import AutomationResult
-from prompt_toolkit import print_formatted_text
-from prompt_toolkit.formatted_text import FormattedText
-from prompt_toolkit.styles import Style
 
 from rich.table import Table
 from rich.panel import Panel
