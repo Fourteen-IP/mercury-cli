@@ -577,7 +577,7 @@ wheels = [
 
 [[package]]
 name = "mercury-cli"
-version = "0.2.0b0"
+version = "0.2.1b0"
 source = { editable = "." }
 dependencies = [
     { name = "argparse" },
