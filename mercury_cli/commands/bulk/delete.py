@@ -7,7 +7,7 @@ completer = MERCURY_CLI.completer()
 completer.bulk.delete.display_meta = "Bulk delete operations for various entities"
 
 
-# -- Group Admin Create Commands -- #
+# -- Group Admin Delete Commands -- #
 @completer.bulk.delete.action(
     "group_admin", display_meta="Bulk delete group admins from a CSV file"
 )
@@ -20,7 +20,7 @@ def _bulk_group_admin(file_path: str):
     )
 
 
-# -- Service Provider Admin Create Commands -- #
+# -- Service Provider Admin Delete Commands -- #
 @completer.bulk.delete.action(
     "service_provider_admin",
     display_meta="Bulk delete service provider admins from a CSV file",
