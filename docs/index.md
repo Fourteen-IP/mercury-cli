@@ -8,8 +8,8 @@
 
 ```asciinema-player
 {
-    "file": "assets/asciinema/autocomplete-example.cast",
-    "title": "Autocomplete Showcase",
+    "file": "assets/asciinema/intro.cast",
+    "title": "Intro",
     "mkap_theme": "none",
     "theme": "dracula",
     "fit": "width",
