@@ -48,6 +48,7 @@ nav:
 - Overview: index.md
 - Commands: commands/*
 - Mercury: https://mercury-docs.14ip.net
+- Async: https://mercury-fast-docs.14ip.net/
 
 markdown_extensions:
 - pymdownx.highlight:
