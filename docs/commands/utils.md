@@ -6,7 +6,7 @@ Utility commands for CLI management and system information.
 
 ```asciinema-player
 {
-    "file": "assets/asciinema/utils.cast",
+    "file": "/assets/asciinema/utils.cast",
     "title": "Utilities Showcase",
     "mkap_theme": "none",
     "theme": "dracula",

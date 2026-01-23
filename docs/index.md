@@ -30,8 +30,16 @@ pip install mercury-cli
 You can then run the CLI using the following command:
 
 ```bash
-mercury_cli
+mercury-cli
 ```
+
+!!! Info
+
+    In some cases, windows defender may complain because the package is not signed. You can run the module directly instead:
+
+    ```bash
+    python -m mercury_cli
+    ```
 
 This runs the module and starts the interactive CLI session. From here you can run commands and do some automations!
 

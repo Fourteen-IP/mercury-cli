@@ -11,7 +11,7 @@ The bulk command processes CSV files to perform mass operations
 
 ```asciinema-player
 {
-    "file": "assets/asciinema/bulk-example.cast",
+    "file": "/assets/asciinema/bulk_example.cast",
     "title": "Bulk Operations Showcase",
     "mkap_theme": "none",
     "theme": "dracula",
