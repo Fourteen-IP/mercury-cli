@@ -1,6 +1,6 @@
 [project]
 name = "mercury-cli"
-version = "0.3.0-beta"
+version = "0.4.0-beta"
 description = "A CLI wrapper for Mercury-OCIP"
 readme = "README.md"
 requires-python = ">=3.12"
