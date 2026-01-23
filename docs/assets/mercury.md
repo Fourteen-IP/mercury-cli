@@ -13,7 +13,7 @@ mercury
 ```
 
 **Controls:**
-- Arrow keys to move
-- `q` to quit
+* Arrow keys to move
+* `q` to quit
 
 

@@ -6,7 +6,7 @@ The automations command provides automated operations for various entities.
 
 ```asciinema-player
 {
-    "file": "assets/asciinema/find-alias.cast",
+    "file": "/assets/asciinema/find_alias.cast",
     "title": "Find Alias Showcase",
     "mkap_theme": "none",
     "theme": "dracula",

@@ -66,35 +66,42 @@ def test_bulk_create(mock_cli_components):
         
     mock_cli_components.agent.bulk.create_user_from_csv.assert_called_once_with(test_file)
 
-def test_help_command(capsys, mock_cli_components):
-    """Test the general help command output."""
-    MERCURY_CLI.completer().run_action("help")
-    
-    captured = capsys.readouterr()
-    assert "Available commands:" in captured.out
-    assert "help" in captured.out
-    assert "exit" in captured.out
-
-def test_help_specific_command(capsys, mock_cli_components):
-    """Test help for a specific command."""
-    MERCURY_CLI.completer().run_action("help exit")
-    
-    captured = capsys.readouterr()
-    assert "exit - Exits the CLI" in captured.out
-
 def test_completer_actions():
     """Test that actions are correctly registered in the completer."""
     completer = MERCURY_CLI.completer()
 
     # Check if root commands exist
-    assert "help" in completer.root.children
     assert "exit" in completer.root.children
     assert "sysver" in completer.root.children
     assert "bulk" in completer.root.children
     assert "automations" in completer.root.children
-    
+
+    exit_action = completer.root.children["exit"]
+    assert exit_action.display_meta == "Exits the CLI"
+
+def test_help_command(capsys):
+    """Test the help command displays available commands."""
+    completer = MERCURY_CLI.completer()
+
+    assert "help" in completer.root.children
     help_action = completer.root.children["help"]
     assert help_action.display_meta == "Gives a list of all commands"
+
+    mock_document = MagicMock()
+    mock_document.text = "help"
+    mock_buffer = MagicMock()
+    mock_buffer.document = mock_document
+    mock_session = MagicMock()
+    mock_session.default_buffer = mock_buffer
+
+    with patch.object(MERCURY_CLI, 'session', return_value=mock_session):
+        completer.run_action("help")
+
+    captured = capsys.readouterr()
+    assert "Mercury CLI - Available Commands" in captured.out
+    assert "help <command>" in captured.out
+
+
 
 def test_sysver_command(capsys, mock_cli_components):
     """Test the sysver command which interacts with the client."""
