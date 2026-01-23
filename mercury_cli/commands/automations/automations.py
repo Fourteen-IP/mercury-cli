@@ -109,29 +109,28 @@ def _print_basic_info(user_info, user_details) -> None:
 
 def _print_call_forwarding(user_details) -> None:
     """Print call forwarding information."""
-    # Regular forwards
-    forwards_active = [
-        f
-        for f in user_details.forwards.user_forwarding
-        if f.is_active == "true" and f.variant != "Selective"
-    ]
 
-    if forwards_active:
-        forward_text = Text(justify="center")
-        for i, fwd in enumerate(forwards_active):
-            if i > 0:
-                forward_text.append(" | ", style="separator")
-            forward_text.append(
-                f"{fwd.variant.replace('_', ' ').title()}: ", style="label"
+    forward_text = Text(justify="center")
+    for i, fwd in enumerate(user_details.forwards.user_forwarding):
+        if i > 0:
+            forward_text.append(" | ", style="separator")
+        forward_text.append(f"{fwd.variant.replace('_', ' ').title()}: ", style="label")
+        if fwd.is_active == "true":
+            dest = (
+                ""
+                if fwd.variant == "Selective"
+                else ((f"({fwd.forward_to_phone_number})") or "—")
             )
-            forward_text.append(fwd.forward_to_phone_number or "—", style="success")
-        console.print(
-            Panel(
-                forward_text,
-                title="[bold #d8bbff]Active Forwards[/]",
-                border_style="divider",
-            )
+            forward_text.append(f"✓ {dest}", style="success")
+        else:
+            forward_text.append("✗", style="error")
+    console.print(
+        Panel(
+            forward_text,
+            title="[bold #d8bbff]Call Forwards[/]",
+            border_style="divider",
         )
+    )
 
     # Selective forwards
     selective_forwards = [
@@ -168,27 +167,25 @@ def _print_call_forwarding(user_details) -> None:
 
 def _print_voicemail_forwarding(user_details) -> None:
     """Print voicemail forwarding information."""
-    vm_forwards_active = [
-        f for f in user_details.forwards.voicemail_forwarding if f.is_active == "true"
-    ]
+    vm_forwards = user_details.forwards.voicemail_forwarding
 
-    if vm_forwards_active:
+    if vm_forwards:
         forward_text = Text(justify="center")
-        for i, fwd in enumerate(vm_forwards_active):
+        for i, fwd in enumerate(vm_forwards):
             if i > 0:
                 forward_text.append(" | ", style="separator")
             forward_text.append(
                 f"{fwd.variant.replace('voice_mail', 'vm').replace('_', ' ').title()}: ",
                 style="label",
             )
-            if fwd.is_active:
+            if fwd.is_active == "true":
                 forward_text.append("✓", style="success")
             else:
                 forward_text.append("✗", style="error")
         console.print(
             Panel(
                 forward_text,
-                title="[bold #d8bbff]Active VM Forwards[/]",
+                title="[bold #d8bbff]VM Forwards[/]",
                 border_style="divider",
             )
         )
@@ -236,19 +233,21 @@ def _print_memberships(
 
 def _print_devices(user_details) -> None:
     """Print registered devices information."""
-    if user_details.registered_devices:
+    if user_details.devices:
         device_table = Table(
             box=box.SIMPLE, show_header=True, padding=(0, 2), expand=True
         )
         device_table.add_column("Device Name", style="value", min_width=20)
         device_table.add_column("Type", style="label", min_width=15)
         device_table.add_column("Lineport", style="label", min_width=15)
+        device_table.add_column("Registered", style="label", min_width=15)
 
-        for device in user_details.registered_devices:
+        for device in user_details.devices:
             device_table.add_row(
                 device.device_name or "N/A",
-                device.endpoint_type or "N/A",
+                device.device_type or "N/A",
                 device.line_port or "N/A",
+                device.is_registered == "[success]✓" or "[error]✗",
             )
 
         console.print(
